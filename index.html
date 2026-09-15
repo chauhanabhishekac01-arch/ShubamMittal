@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shubham Mittal Store - Order Entry</title>
+  <style>
+    :root {
+      --primary-color: #0d6efd;
+      --primary-hover: #0b5ed7;
+      --success-color: #198754;
+      --success-hover: #157347;
+      --warning-color: #ffc107;
+      --danger-color: #dc3545;
+      --light-bg: #f8f9fa;
+      --border-color: #dee2e6;
+      --text-dark: #212529;
+      --text-muted: #6c757d;
+      --radius: 8px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f4f6f9;
+      color: var(--text-dark);
+      padding: 20px 10px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 24px;
+      border-radius: var(--radius);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    header {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      border-bottom: 2px solid #eef2f6;
+      padding-bottom: 20px;
+      margin-bottom: 24px;
+    }
+
+    @media (min-width: 600px) {
+      header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+    }
+
+    header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .header-right {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    @media (min-width: 600px) {
+      .header-right {
+        align-items: flex-end;
+      }
+    }
+
+    .date-display {
+      font-weight: 600;
+      font-size: 13px;
+      background: var(--light-bg);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+    }
+
+    .type-toggle-group {
+      display: flex;
+      background: #e9ecef;
+      border-radius: 6px;
+      padding: 3px;
+    }
+
+    .toggle-btn {
+      padding: 8px 20px;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      font-size: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+    }
+
+    .toggle-btn.active {
+      background: var(--primary-color);
+      color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media (min-width: 600px) {
+      .form-row {
+        flex-direction: row;
+      }
+      .form-row > div {
+        flex: 1;
+      }
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      color: #343a40;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+    }
+
+    .custom-input {
+      margin-top: 10px;
+      display: none;
+    }
+
+    .inline-fields {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    @media (min-width: 600px) {
+      .inline-fields {
+        flex-direction: row;
+      }
+      .inline-fields input {
+        flex: 1;
+      }
+    }
+
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      margin: 20px 0;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 550px;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background-color: var(--light-bg);
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    th.sn-col, td.sn-col {
+      width: 60px;
+      text-align: center;
+    }
+
+    .actions-cell {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-add { 
+      background: var(--success-color); 
+      color: #fff; 
+      width: 100%;
+    }
+    
+    @media (min-width: 600px) {
+      .btn-add { width: auto; }
+    }
+
+    .btn-add:hover { background: var(--success-hover); }
+
+    .btn-edit { background: var(--warning-color); color: #000; padding: 6px 12px; font-size: 13px; }
+    .btn-delete { background: var(--danger-color); color: #fff; padding: 6px 12px; font-size: 13px; }
+
+    .btn-post {
+      background: var(--primary-color);
+      color: white;
+      width: 100%;
+      padding: 14px;
+      font-size: 16px;
+      margin-top: 24px;
+      border-radius: var(--radius);
+    }
+
+    .btn-post:hover { background: var(--primary-hover); }
+
+    .grand-total {
+      text-align: right;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin: 15px 0;
+    }
+
+    .payment-section {
+      background: var(--light-bg);
+      padding: 18px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border-color);
+    }
+
+    .payment-toggle-group {
+      display: flex;
+      background: #dee2e6;
+      border-radius: 6px;
+      padding: 3px;
+      max-width: 300px;
+      margin-bottom: 12px;
+    }
+
+    .pay-btn {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      font-size: 13px;
+      border-radius: 4px;
+      cursor: pointer;
+      color: var(--text-muted);
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .pay-btn.active {
+      background: var(--success-color);
+      color: #ffffff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .credit-details {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    @media (min-width: 600px) {
+      .credit-details {
+        flex-direction: row;
+      }
+      .credit-details > div {
+        flex: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Shubham Mittal Store</h1>
+      <div class="header-right">
+        <div class="date-display" id="dateDisplay">Loading date...</div>
+        
+        <div class="type-toggle-group">
+          <button type="button" class="toggle-btn active" id="btnSales" onclick="setEntryType('Sales')">Sales</button>
+          <button type="button" class="toggle-btn" id="btnPurchase" onclick="setEntryType('Purchase')">Purchase</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Creditor Selection Block -->
+    <div class="form-group form-row">
+      <div>
+        <label for="creditorSelect">Creditor Name:</label>
+        <select id="creditorSelect" onchange="toggleCustomCreditor()">
+          <option value="" disabled selected>-- Select Creditor --</option>
+          <option value="Abhishek">Abhishek</option>
+          <option value="Arun">Arun</option>
+          <option value="Amit">Amit</option>
+          <option value="Other">Other...</option>
+        </select>
+        <input type="text" id="customCreditor" class="custom-input" placeholder="Enter Custom Creditor Name">
+      </div>
+    </div>
+
+    <!-- Items Form -->
+    <div class="form-group">
+      <label>Add Item Details:</label>
+      <div class="inline-fields">
+        <input type="text" id="itemName" placeholder="Item Name">
+        <input type="number" id="itemPrice" placeholder="Price (₹)" step="0.01" min="0">
+        <input type="number" id="itemQty" placeholder="Qty" min="1">
+        <button type="button" class="btn btn-add" id="btnAddItem" onclick="addOrUpdateItem()">Add Item</button>
+      </div>
+    </div>
+
+    <!-- Scrollable Items Table -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th class="sn-col">S.No</th>
+            <th>Item Name</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Total</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="itemsTableBody">
+          <!-- Dynamic rows inserted here -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grand-total">
+      Grand Total: ₹<span id="grandTotalText">0.00</span>
+    </div>
+
+    <!-- Payment Section -->
+    <div class="payment-section">
+      <label>Payment Status:</label>
+      
+      <div class="payment-toggle-group">
+        <button type="button" class="pay-btn active" id="btnFullPayment" onclick="setPaymentStatus('Full Payment')">Full Payment</button>
+        <button type="button" class="pay-btn" id="btnCredit" onclick="setPaymentStatus('Credit')">Credit</button>
+      </div>
+
+      <div class="credit-details" id="creditDetails">
+        <div>
+          <label for="partPayment">Part Payment Received (₹):</label>
+          <input type="number" id="partPayment" placeholder="0.00" oninput="calculateBalance()">
+        </div>
+        <div>
+          <label for="balanceAmount">Balance Due (₹):</label>
+          <input type="number" id="balanceAmount" placeholder="0.00" readonly>
+        </div>
+      </div>
+    </div>
+
+    <button type="button" class="btn btn-post" id="btnSubmit" onclick="postToGoogleSheet()">POST TO GOOGLE SHEET</button>
+  </div>
+
+  <script>
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyWnDOTBbCOkHTgMtUfheNGEySgGa6g2ejwrWjbZiqSBHorDaDJ83rJwwq6-jajJH7q9g/exec";
+
+    let items = [];
+    let editIndex = -1;
+    let selectedEntryType = "Sales";
+    let selectedPaymentStatus = "Full Payment";
+
+    function toggleCustomCreditor() {
+      const select = document.getElementById('creditorSelect');
+      const customInput = document.getElementById('customCreditor');
+      if (select.value === 'Other') {
+        customInput.style.display = 'block';
+        customInput.focus();
+      } else {
+        customInput.style.display = 'none';
+        customInput.value = '';
+      }
+    }
+
+    function setEntryType(type) {
+      selectedEntryType = type;
+      document.getElementById('btnSales').classList.toggle('active', type === 'Sales');
+      document.getElementById('btnPurchase').classList.toggle('active', type === 'Purchase');
+    }
+
+    function setPaymentStatus(status) {
+      selectedPaymentStatus = status;
+      document.getElementById('btnFullPayment').classList.toggle('active', status === 'Full Payment');
+      document.getElementById('btnCredit').classList.toggle('active', status === 'Credit');
+      
+      const creditDetails = document.getElementById('creditDetails');
+      if (status === 'Full Payment') {
+        creditDetails.style.display = 'none';
+        document.getElementById('partPayment').value = '';
+        document.getElementById('balanceAmount').value = '';
+      } else {
+        creditDetails.style.display = 'flex';
+        calculateBalance();
+      }
+    }
+
+    function setDate() {
+      const today = new Date();
+      const dd = String(today.getDate()).padStart(2, '0');
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const yyyy = today.getFullYear();
+      document.getElementById('dateDisplay').innerText = `${dd}/${mm}/${yyyy}`;
+    }
+
+    function addOrUpdateItem() {
+      const nameInput = document.getElementById('itemName');
+      const priceInput = document.getElementById('itemPrice');
+      const qtyInput = document.getElementById('itemQty');
+
+      const name = nameInput.value.trim();
+      const price = parseFloat(priceInput.value);
+      const qty = parseInt(qtyInput.value);
+
+      if (!name || isNaN(price) || isNaN(qty) || qty <= 0 || price < 0) {
+        alert("Please enter a valid item name, price, and quantity.");
+        return;
+      }
+
+      const total = price * qty;
+
+      if (editIndex === -1) {
+        items.push({ name, price, qty, total });
+      } else {
+        items[editIndex] = { name, price, qty, total };
+        editIndex = -1;
+        document.getElementById('btnAddItem').innerText = 'Add Item';
+      }
+
+      clearItemInputs();
+      renderItemsTable();
+      nameInput.focus();
+    }
+
+    function clearItemInputs() {
+      document.getElementById('itemName').value = '';
+      document.getElementById('itemPrice').value = '';
+      document.getElementById('itemQty').value = '';
+    }
+
+    function renderItemsTable() {
+      const tbody = document.getElementById('itemsTableBody');
+      tbody.innerHTML = '';
+      let grandTotal = 0;
+
+      items.forEach((item, index) => {
+        grandTotal += item.total;
+        tbody.innerHTML += `
+          <tr>
+            <td class="sn-col">${index + 1}</td>
+            <td>${item.name}</td>
+            <td>₹${item.price.toFixed(2)}</td>
+            <td>${item.qty}</td>
+            <td>₹${item.total.toFixed(2)}</td>
+            <td>
+              <div class="actions-cell">
+                <button type="button" class="btn btn-edit" onclick="editItem(${index})">Edit</button>
+                <button type="button" class="btn btn-delete" onclick="deleteItem(${index})">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      });
+
+      document.getElementById('grandTotalText').innerText = grandTotal.toFixed(2);
+      calculateBalance();
+    }
+
+    function editItem(index) {
+      const item = items[index];
+      document.getElementById('itemName').value = item.name;
+      document.getElementById('itemPrice').value = item.price;
+      document.getElementById('itemQty').value = item.qty;
+      
+      editIndex = index;
+      document.getElementById('btnAddItem').innerText = 'Update Item';
+    }
+
+    function deleteItem(index) {
+      items.splice(index, 1);
+      renderItemsTable();
+    }
+
+    function calculateBalance() {
+      const grandTotal = parseFloat(document.getElementById('grandTotalText').innerText) || 0;
+      const partPayment = parseFloat(document.getElementById('partPayment').value) || 0;
+      const balance = grandTotal - partPayment;
+      document.getElementById('balanceAmount').value = balance >= 0 ? balance.toFixed(2) : '0.00';
+    }
+
+    function postToGoogleSheet() {
+      const select = document.getElementById('creditorSelect').value;
+      const customCreditor = document.getElementById('customCreditor').value.trim();
+      const creditor = (select === 'Other') ? customCreditor : select;
+
+      if (!creditor) {
+        alert("Please select or enter a creditor name.");
+        return;
+      }
+
+      if (items.length === 0) {
+        alert("Please add at least one item.");
+        return;
+      }
+
+      const grandTotal = parseFloat(document.getElementById('grandTotalText').innerText);
+      const partPayment = selectedPaymentStatus === 'Credit' ? parseFloat(document.getElementById('partPayment').value || 0) : grandTotal;
+      const balance = selectedPaymentStatus === 'Credit' ? parseFloat(document.getElementById('balanceAmount').value || 0) : 0;
+
+      const dateStr = document.getElementById('dateDisplay').innerText;
+      const itemSummary = items.map((i, idx) => `${idx + 1}. ${i.name} (x${i.qty} @ ₹${i.price})`).join(', ');
+
+      const payload = {
+        date: dateStr,
+        entryType: selectedEntryType,
+        creditorName: creditor,
+        items: itemSummary,
+        total: grandTotal,
+        paymentStatus: selectedPaymentStatus,
+        partPayment: partPayment,
+        balance: balance
+      };
+
+      const submitBtn = document.getElementById('btnSubmit');
+      submitBtn.disabled = true;
+      submitBtn.innerText = "POSTING DATA...";
+
+      fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(() => {
+        alert("Data sent successfully!");
+        items = [];
+        renderItemsTable();
+        document.getElementById('creditorSelect').value = '';
+        toggleCustomCreditor();
+        setPaymentStatus('Full Payment');
+        setEntryType('Sales');
+        document.getElementById('itemName').focus();
+      })
+      .catch(error => {
+        console.error('Error!', error);
+        alert('Failed to post data. Please try again.');
+      })
+      .finally(() => {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "POST TO GOOGLE SHEET";
+      });
+    }
+
+    // Initialize setup
+    setDate();
+  </script>
+</body>
+</html>
