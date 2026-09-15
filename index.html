@@ -547,552 +547,884 @@
 
   <script>
 
-    const GOOGLE_SCRIPT_URL =
-      "https://script.google.com/macros/s/AKfycbyWnDOTBbCOkHTgMtUfheNGEySgGa6g2ejwrWjbZiqSBHorDaDJ83rJwwq6-jajJH7q9g/exec";
+  /*
+   * =========================================================
+   * GOOGLE APPS SCRIPT WEB APP URL
+   * =========================================================
+   *
+   * IMPORTANT:
+   * Put your CURRENT /exec URL here after redeploying.
+   */
 
-    let items = [];
-    let editIndex = -1;
-    let selectedEntryType = "Sales";
-    let selectedPaymentStatus = "Full Payment";
+  const GOOGLE_SCRIPT_URL =
+    "https://script.google.com/macros/s/AKfycbxeb53-gHglXoKmAh6RyPQRcVHjPaTPzC92p0kSgI-ot6OG17c_1pOiy0X_d75dcnM6qQ/exec";
 
 
-    /* ------------------------------
-       CUSTOM CREDITOR
-    ------------------------------ */
+  /*
+   * =========================================================
+   * VARIABLES
+   * =========================================================
+   */
 
-    function toggleCustomCreditor() {
+  let items = [];
 
-      const select =
-        document.getElementById('creditorSelect');
+  let editIndex = -1;
 
-      const customInput =
-        document.getElementById('customCreditor');
+  let selectedEntryType = "Sales";
 
-      if (select.value === 'Other') {
+  let selectedPaymentStatus = "Full Payment";
 
-        customInput.style.display = 'block';
-        customInput.focus();
 
-      } else {
+  /*
+   * =========================================================
+   * CUSTOM CREDITOR
+   * =========================================================
+   */
 
-        customInput.style.display = 'none';
-        customInput.value = '';
+  function toggleCustomCreditor() {
 
-      }
+    const select =
+      document.getElementById("creditorSelect");
+
+    const customInput =
+      document.getElementById("customCreditor");
+
+
+    if (select.value === "Other") {
+
+      customInput.style.display = "block";
+
+      customInput.focus();
+
+    } else {
+
+      customInput.style.display = "none";
+
+      customInput.value = "";
+
+    }
+
+  }
+
+
+  /*
+   * =========================================================
+   * SALES / PURCHASE
+   * =========================================================
+   */
+
+  function setEntryType(type) {
+
+    selectedEntryType = type;
+
+
+    document
+      .getElementById("btnSales")
+      .classList
+      .toggle("active", type === "Sales");
+
+
+    document
+      .getElementById("btnPurchase")
+      .classList
+      .toggle("active", type === "Purchase");
+
+  }
+
+
+  /*
+   * =========================================================
+   * PAYMENT STATUS
+   * =========================================================
+   */
+
+  function setPaymentStatus(status) {
+
+    selectedPaymentStatus = status;
+
+
+    document
+      .getElementById("btnFullPayment")
+      .classList
+      .toggle(
+        "active",
+        status === "Full Payment"
+      );
+
+
+    document
+      .getElementById("btnCredit")
+      .classList
+      .toggle(
+        "active",
+        status === "Credit"
+      );
+
+
+    const creditDetails =
+      document.getElementById("creditDetails");
+
+
+    if (status === "Full Payment") {
+
+      creditDetails.style.display = "none";
+
+      document.getElementById("partPayment").value = "";
+
+      document.getElementById("balanceAmount").value = "";
+
+    } else {
+
+      creditDetails.style.display = "flex";
+
+      calculateBalance();
+
+    }
+
+  }
+
+
+  /*
+   * =========================================================
+   * DATE
+   * =========================================================
+   */
+
+  function setDate() {
+
+    const today = new Date();
+
+
+    const dd =
+      String(today.getDate())
+        .padStart(2, "0");
+
+
+    const mm =
+      String(today.getMonth() + 1)
+        .padStart(2, "0");
+
+
+    const yyyy =
+      today.getFullYear();
+
+
+    document.getElementById("dateDisplay")
+      .innerText =
+      `${dd}/${mm}/${yyyy}`;
+
+  }
+
+
+  /*
+   * =========================================================
+   * ADD / UPDATE ITEM
+   * =========================================================
+   */
+
+  function addOrUpdateItem() {
+
+    const nameInput =
+      document.getElementById("itemName");
+
+
+    const priceInput =
+      document.getElementById("itemPrice");
+
+
+    const qtyInput =
+      document.getElementById("itemQty");
+
+
+    const name =
+      nameInput.value.trim();
+
+
+    const price =
+      parseFloat(priceInput.value);
+
+
+    const qty =
+      parseInt(qtyInput.value);
+
+
+    if (
+      !name ||
+      isNaN(price) ||
+      isNaN(qty) ||
+      qty <= 0 ||
+      price < 0
+    ) {
+
+      alert(
+        "Please enter a valid item name, price, and quantity."
+      );
+
+      return;
+
     }
 
 
-    /* ------------------------------
-       SALES / PURCHASE
-    ------------------------------ */
+    const total =
+      price * qty;
 
-    function setEntryType(type) {
 
-      selectedEntryType = type;
+    const item = {
+
+      name: name,
+
+      price: price,
+
+      qty: qty,
+
+      total: total
+
+    };
+
+
+    if (editIndex === -1) {
+
+      items.push(item);
+
+    } else {
+
+      items[editIndex] = item;
+
+      editIndex = -1;
 
       document
-        .getElementById('btnSales')
-        .classList
-        .toggle('active', type === 'Sales');
+        .getElementById("btnAddItem")
+        .innerText = "Add Item";
 
-      document
-        .getElementById('btnPurchase')
-        .classList
-        .toggle('active', type === 'Purchase');
     }
 
 
-    /* ------------------------------
-       PAYMENT STATUS
-    ------------------------------ */
+    clearItemInputs();
 
-    function setPaymentStatus(status) {
+    renderItemsTable();
 
-      selectedPaymentStatus = status;
+    nameInput.focus();
 
-      document
-        .getElementById('btnFullPayment')
-        .classList
-        .toggle('active', status === 'Full Payment');
+  }
 
-      document
-        .getElementById('btnCredit')
-        .classList
-        .toggle('active', status === 'Credit');
 
-      const creditDetails =
-        document.getElementById('creditDetails');
+  /*
+   * =========================================================
+   * CLEAR ITEM INPUTS
+   * =========================================================
+   */
 
-      if (status === 'Full Payment') {
+  function clearItemInputs() {
 
-        creditDetails.style.display = 'none';
+    document.getElementById("itemName").value = "";
 
-        document.getElementById('partPayment').value = '';
-        document.getElementById('balanceAmount').value = '';
+    document.getElementById("itemPrice").value = "";
 
-      } else {
+    document.getElementById("itemQty").value = "";
 
-        creditDetails.style.display = 'flex';
+  }
 
-        calculateBalance();
-      }
+
+  /*
+   * =========================================================
+   * RENDER ITEMS
+   * =========================================================
+   */
+
+  function renderItemsTable() {
+
+    const tbody =
+      document.getElementById("itemsTableBody");
+
+
+    tbody.innerHTML = "";
+
+
+    let grandTotal = 0;
+
+
+    items.forEach((item, index) => {
+
+      grandTotal += item.total;
+
+
+      const row =
+        document.createElement("tr");
+
+
+      row.innerHTML = `
+
+        <td class="sn-col">
+          ${index + 1}
+        </td>
+
+        <td>
+          ${escapeHtml(item.name)}
+        </td>
+
+        <td>
+          ₹${item.price.toFixed(2)}
+        </td>
+
+        <td>
+          ${item.qty}
+        </td>
+
+        <td>
+          ₹${item.total.toFixed(2)}
+        </td>
+
+        <td>
+
+          <div class="actions-cell">
+
+            <button
+              type="button"
+              class="btn btn-edit"
+              onclick="editItem(${index})">
+              Edit
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-delete"
+              onclick="deleteItem(${index})">
+              Delete
+            </button>
+
+          </div>
+
+        </td>
+      `;
+
+
+      tbody.appendChild(row);
+
+    });
+
+
+    document.getElementById("grandTotalText")
+      .innerText =
+      grandTotal.toFixed(2);
+
+
+    calculateBalance();
+
+  }
+
+
+  /*
+   * =========================================================
+   * HTML ESCAPE
+   * =========================================================
+   */
+
+  function escapeHtml(value) {
+
+    return String(value)
+
+      .replace(/&/g, "&amp;")
+
+      .replace(/</g, "&lt;")
+
+      .replace(/>/g, "&gt;")
+
+      .replace(/"/g, "&quot;")
+
+      .replace(/'/g, "&#039;");
+
+  }
+
+
+  /*
+   * =========================================================
+   * EDIT ITEM
+   * =========================================================
+   */
+
+  function editItem(index) {
+
+    const item =
+      items[index];
+
+
+    document.getElementById("itemName")
+      .value = item.name;
+
+
+    document.getElementById("itemPrice")
+      .value = item.price;
+
+
+    document.getElementById("itemQty")
+      .value = item.qty;
+
+
+    editIndex = index;
+
+
+    document.getElementById("btnAddItem")
+      .innerText = "Update Item";
+
+  }
+
+
+  /*
+   * =========================================================
+   * DELETE ITEM
+   * =========================================================
+   */
+
+  function deleteItem(index) {
+
+    items.splice(index, 1);
+
+    editIndex = -1;
+
+    document.getElementById("btnAddItem")
+      .innerText = "Add Item";
+
+    renderItemsTable();
+
+  }
+
+
+  /*
+   * =========================================================
+   * CALCULATE BALANCE
+   * =========================================================
+   */
+
+  function calculateBalance() {
+
+    const grandTotal =
+      parseFloat(
+        document.getElementById("grandTotalText")
+          .innerText
+      ) || 0;
+
+
+    const partPayment =
+      parseFloat(
+        document.getElementById("partPayment")
+          .value
+      ) || 0;
+
+
+    let balance =
+      grandTotal - partPayment;
+
+
+    if (balance < 0) {
+
+      balance = 0;
+
     }
 
 
-    /* ------------------------------
-       DISPLAY DATE
-       DD/MM/YYYY
-    ------------------------------ */
+    document.getElementById("balanceAmount")
+      .value =
+      balance.toFixed(2);
 
-    function setDate() {
+  }
 
-      const today = new Date();
 
-      const dd =
-        String(today.getDate()).padStart(2, '0');
+  /*
+   * =========================================================
+   * POST TO GOOGLE SHEET
+   * =========================================================
+   */
 
-      const mm =
-        String(today.getMonth() + 1).padStart(2, '0');
+  async function postToGoogleSheet() {
 
-      const yyyy =
-        today.getFullYear();
+    /*
+     * Check URL
+     */
 
-      document.getElementById('dateDisplay').innerText =
-        `${dd}/${mm}/${yyyy}`;
+    if (
+      !GOOGLE_SCRIPT_URL ||
+      GOOGLE_SCRIPT_URL ===
+      "https://script.google.com/macros/s/AKfycbxeb53-gHglXoKmAh6RyPQRcVHjPaTPzC92p0kSgI-ot6OG17c_1pOiy0X_d75dcnM6qQ/exec"
+    ) {
+
+      alert(
+        "Google Apps Script URL has not been configured."
+      );
+
+      return;
+
     }
 
 
-    /* ------------------------------
-       ADD / UPDATE ITEM
-    ------------------------------ */
+    /*
+     * Get creditor
+     */
 
-    function addOrUpdateItem() {
+    const select =
+      document.getElementById("creditorSelect")
+        .value;
 
-      const nameInput =
-        document.getElementById('itemName');
 
-      const priceInput =
-        document.getElementById('itemPrice');
+    const customCreditor =
+      document
+        .getElementById("customCreditor")
+        .value
+        .trim();
 
-      const qtyInput =
-        document.getElementById('itemQty');
 
-      const name =
-        nameInput.value.trim();
+    const creditor =
+      select === "Other"
+        ? customCreditor
+        : select;
 
-      const price =
-        parseFloat(priceInput.value);
 
-      const qty =
-        parseInt(qtyInput.value);
+    /*
+     * Validate creditor
+     */
 
-      if (
-        !name ||
-        isNaN(price) ||
-        isNaN(qty) ||
-        qty <= 0 ||
-        price < 0
-      ) {
+    if (!creditor) {
+
+      alert(
+        "Please select or enter a Customer / Creditor name."
+      );
+
+      return;
+
+    }
+
+
+    /*
+     * Validate items
+     */
+
+    if (items.length === 0) {
+
+      alert(
+        "Please add at least one item before posting."
+      );
+
+      return;
+
+    }
+
+
+    /*
+     * Grand total
+     */
+
+    const grandTotal =
+      items.reduce(
+        (sum, item) =>
+          sum + item.total,
+        0
+      );
+
+
+    /*
+     * Payment
+     */
+
+    let partPayment = 0;
+
+    let balance = 0;
+
+
+    if (
+      selectedPaymentStatus === "Credit"
+    ) {
+
+      partPayment =
+        parseFloat(
+          document.getElementById("partPayment")
+            .value
+        ) || 0;
+
+
+      if (partPayment > grandTotal) {
 
         alert(
-          "Please enter a valid item name, price, and quantity."
+          "Part payment cannot be greater than the Grand Total."
         );
 
         return;
+
       }
 
-      const total =
-        price * qty;
 
-      if (editIndex === -1) {
+      balance =
+        grandTotal - partPayment;
 
-        items.push({
-          name,
-          price,
-          qty,
-          total
-        });
+    } else {
 
-      } else {
+      partPayment = grandTotal;
 
-        items[editIndex] = {
-          name,
-          price,
-          qty,
-          total
-        };
+      balance = 0;
 
-        editIndex = -1;
+    }
 
-        document.getElementById('btnAddItem').innerText =
-          'Add Item';
+
+    /*
+     * Date
+     *
+     * YYYY-MM-DD
+     */
+
+    const today =
+      new Date();
+
+
+    const dateStr =
+      today.getFullYear() +
+      "-" +
+      String(
+        today.getMonth() + 1
+      ).padStart(2, "0") +
+      "-" +
+      String(
+        today.getDate()
+      ).padStart(2, "0");
+
+
+    /*
+     * Item summary
+     */
+
+    const itemSummary =
+      items
+        .map(
+          (item, index) =>
+            `${index + 1}. ${item.name} (x${item.qty} @ ₹${item.price.toFixed(2)})`
+        )
+        .join(", ");
+
+
+    /*
+     * Payload
+     */
+
+    const payload = {
+
+      date: dateStr,
+
+      entryType:
+        selectedEntryType,
+
+      creator:
+        "Admin",
+
+      partyName:
+        creditor,
+
+      items:
+        itemSummary,
+
+      total:
+        Number(grandTotal.toFixed(2)),
+
+      paymentStatus:
+        selectedPaymentStatus,
+
+      partPayment:
+        Number(partPayment.toFixed(2)),
+
+      balance:
+        Number(balance.toFixed(2))
+
+    };
+
+
+    /*
+     * Button
+     */
+
+    const submitBtn =
+      document.getElementById("btnSubmit");
+
+
+    submitBtn.disabled = true;
+
+    submitBtn.innerText =
+      "POSTING DATA...";
+
+
+    try {
+
+      /*
+       * IMPORTANT:
+       *
+       * Do NOT use:
+       *
+       * mode: "no-cors"
+       *
+       * Do NOT use:
+       *
+       * Content-Type: application/json
+       *
+       * We send JSON as text/plain.
+       *
+       * This avoids the browser's CORS preflight.
+       */
+
+      const response =
+        await fetch(
+          GOOGLE_SCRIPT_URL,
+          {
+
+            method: "POST",
+
+            headers: {
+
+              "Content-Type":
+                "text/plain;charset=utf-8"
+
+            },
+
+            body:
+              JSON.stringify(payload)
+
+          }
+        );
+
+
+      /*
+       * Read response
+       */
+
+      const result =
+        await response.json();
+
+
+      console.log(
+        "Google Apps Script response:",
+        result
+      );
+
+
+      /*
+       * Check result
+       */
+
+      if (
+        !result ||
+        result.success !== true
+      ) {
+
+        throw new Error(
+          result.message ||
+          "Google Apps Script rejected the request."
+        );
+
       }
+
+
+      /*
+       * SUCCESS
+       */
+
+      alert(
+        "Order successfully posted to Google Sheet!"
+      );
+
+
+      /*
+       * Reset items
+       */
+
+      items = [];
+
+      editIndex = -1;
+
+      renderItemsTable();
+
+
+      /*
+       * Reset creditor
+       */
+
+      document.getElementById(
+        "creditorSelect"
+      ).value = "";
+
+
+      document.getElementById(
+        "customCreditor"
+      ).value = "";
+
+
+      toggleCustomCreditor();
+
+
+      /*
+       * Reset payment
+       */
+
+      setPaymentStatus(
+        "Full Payment"
+      );
+
+
+      /*
+       * Reset entry type
+       */
+
+      setEntryType(
+        "Sales"
+      );
+
+
+      /*
+       * Clear item inputs
+       */
 
       clearItemInputs();
 
-      renderItemsTable();
 
-      nameInput.focus();
-    }
+      /*
+       * Focus item name
+       */
 
+      document.getElementById(
+        "itemName"
+      ).focus();
 
-    /* ------------------------------
-       CLEAR ITEM INPUTS
-    ------------------------------ */
 
-    function clearItemInputs() {
+    } catch (error) {
 
-      document.getElementById('itemName').value = '';
-      document.getElementById('itemPrice').value = '';
-      document.getElementById('itemQty').value = '';
-    }
+      console.error(
+        "POST ERROR:",
+        error
+      );
 
 
-    /* ------------------------------
-       RENDER TABLE
-    ------------------------------ */
+      alert(
+        "Unable to post the order.\n\n" +
+        "Error: " +
+        error.message +
+        "\n\n" +
+        "Please check the Google Apps Script deployment."
+      );
 
-    function renderItemsTable() {
 
-      const tbody =
-        document.getElementById('itemsTableBody');
+    } finally {
 
-      tbody.innerHTML = '';
+      submitBtn.disabled = false;
 
-      let grandTotal = 0;
-
-      items.forEach((item, index) => {
-
-        grandTotal += item.total;
-
-        tbody.innerHTML += `
-          <tr>
-            <td class="sn-col">${index + 1}</td>
-            <td>${item.name}</td>
-            <td>₹${item.price.toFixed(2)}</td>
-            <td>${item.qty}</td>
-            <td>₹${item.total.toFixed(2)}</td>
-            <td>
-              <div class="actions-cell">
-
-                <button
-                  type="button"
-                  class="btn btn-edit"
-                  onclick="editItem(${index})">
-                  Edit
-                </button>
-
-                <button
-                  type="button"
-                  class="btn btn-delete"
-                  onclick="deleteItem(${index})">
-                  Delete
-                </button>
-
-              </div>
-            </td>
-          </tr>
-        `;
-      });
-
-      document.getElementById('grandTotalText').innerText =
-        grandTotal.toFixed(2);
-
-      calculateBalance();
-    }
-
-
-    /* ------------------------------
-       EDIT ITEM
-    ------------------------------ */
-
-    function editItem(index) {
-
-      const item = items[index];
-
-      document.getElementById('itemName').value =
-        item.name;
-
-      document.getElementById('itemPrice').value =
-        item.price;
-
-      document.getElementById('itemQty').value =
-        item.qty;
-
-      editIndex = index;
-
-      document.getElementById('btnAddItem').innerText =
-        'Update Item';
-    }
-
-
-    /* ------------------------------
-       DELETE ITEM
-    ------------------------------ */
-
-    function deleteItem(index) {
-
-      items.splice(index, 1);
-
-      renderItemsTable();
-    }
-
-
-    /* ------------------------------
-       CALCULATE BALANCE
-    ------------------------------ */
-
-    function calculateBalance() {
-
-      const grandTotal =
-        parseFloat(
-          document.getElementById('grandTotalText').innerText
-        ) || 0;
-
-      const partPayment =
-        parseFloat(
-          document.getElementById('partPayment').value
-        ) || 0;
-
-      const balance =
-        grandTotal - partPayment;
-
-      document.getElementById('balanceAmount').value =
-        balance >= 0
-          ? balance.toFixed(2)
-          : '0.00';
-    }
-
-
-    /* ------------------------------
-       POST TO GOOGLE SHEETS
-    ------------------------------ */
-
-    function postToGoogleSheet() {
-
-      const select =
-        document.getElementById('creditorSelect').value;
-
-      const customCreditor =
-        document
-          .getElementById('customCreditor')
-          .value
-          .trim();
-
-      const creditor =
-        select === 'Other'
-          ? customCreditor
-          : select;
-
-
-      if (!creditor) {
-
-        alert(
-          "Please select or enter a Customer / Creditor name."
-        );
-
-        return;
-      }
-
-
-      if (!items || items.length === 0) {
-
-        alert(
-          "Please add at least one item before posting."
-        );
-
-        return;
-      }
-
-
-      const grandTotal =
-        parseFloat(
-          document.getElementById('grandTotalText').innerText
-        ) || 0;
-
-
-      let partPayment = 0;
-      let balance = 0;
-
-
-      if (selectedPaymentStatus === 'Credit') {
-
-        partPayment =
-          parseFloat(
-            document.getElementById('partPayment').value || 0
-          );
-
-        balance =
-          parseFloat(
-            document.getElementById('balanceAmount').value || 0
-          );
-
-      } else {
-
-        partPayment = grandTotal;
-        balance = 0;
-      }
-
-
-      /* --------------------------------
-         IMPORTANT DATE CHANGE
-
-         Send YYYY-MM-DD to Apps Script
-         instead of DD/MM/YYYY text.
-      -------------------------------- */
-
-      const today = new Date();
-
-      const dateStr =
-        today.getFullYear() +
-        "-" +
-        String(today.getMonth() + 1).padStart(2, "0") +
-        "-" +
-        String(today.getDate()).padStart(2, "0");
-
-
-      const itemSummary =
-        items
-          .map(
-            (i, idx) =>
-              `${idx + 1}. ${i.name} (x${i.qty} @ ₹${i.price})`
-          )
-          .join(', ');
-
-
-      const payload = {
-
-        date: dateStr,
-
-        entryType:
-          selectedEntryType || "Sales",
-
-        creator:
-          "Admin",
-
-        partyName:
-          creditor,
-
-        items:
-          itemSummary,
-
-        total:
-          grandTotal,
-
-        paymentStatus:
-          selectedPaymentStatus || "Full Payment",
-
-        partPayment:
-          partPayment,
-
-        balance:
-          balance
-      };
-
-
-      const submitBtn =
-        document.getElementById('btnSubmit');
-
-      submitBtn.disabled = true;
       submitBtn.innerText =
-        "POSTING DATA...";
+        "POST TO GOOGLE SHEET";
 
-
-      fetch(GOOGLE_SCRIPT_URL, {
-
-        method: 'POST',
-
-        mode: 'no-cors',
-
-        headers: {
-          'Content-Type': 'application/json'
-        },
-
-        body:
-          JSON.stringify(payload)
-
-      })
-
-      .then(() => {
-
-        alert(
-          "Data posted to Google Sheet successfully!"
-        );
-
-
-        items = [];
-
-        renderItemsTable();
-
-
-        const creditorSelect =
-          document.getElementById('creditorSelect');
-
-        if (creditorSelect) {
-          creditorSelect.value = '';
-        }
-
-
-        const customCreditorInput =
-          document.getElementById('customCreditor');
-
-        if (customCreditorInput) {
-          customCreditorInput.value = '';
-        }
-
-
-        toggleCustomCreditor();
-
-
-        setPaymentStatus(
-          'Full Payment'
-        );
-
-
-        setEntryType(
-          'Sales'
-        );
-
-
-        const itemNameInput =
-          document.getElementById('itemName');
-
-        if (itemNameInput) {
-          itemNameInput.focus();
-        }
-
-      })
-
-      .catch(error => {
-
-        console.error(
-          'Error posting data:',
-          error
-        );
-
-        alert(
-          'Failed to post data. Please check your network connection and try again.'
-        );
-
-      })
-
-      .finally(() => {
-
-        submitBtn.disabled = false;
-
-        submitBtn.innerText =
-          "POST TO GOOGLE SHEET";
-      });
     }
 
+  }
 
-    /* ------------------------------
-       INITIALIZE
-    ------------------------------ */
 
-    setDate();
+  /*
+   * =========================================================
+   * INITIALIZE
+   * =========================================================
+   */
 
-  </script>
+  setDate();
 
+</script>
 </body>
 </html>
