@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Shubham Mittal Store - Order Entry</title>
+
   <style>
     :root {
       --primary-color: #0d6efd;
@@ -23,7 +24,8 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
     }
 
     body {
@@ -127,6 +129,7 @@
       .form-row {
         flex-direction: row;
       }
+
       .form-row > div {
         flex: 1;
       }
@@ -140,7 +143,8 @@
       color: #343a40;
     }
 
-    input, select {
+    input,
+    select {
       width: 100%;
       padding: 10px 14px;
       border: 1px solid var(--border-color);
@@ -150,7 +154,8 @@
       transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    input:focus, select:focus {
+    input:focus,
+    select:focus {
       border-color: var(--primary-color);
       box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
     }
@@ -170,6 +175,7 @@
       .inline-fields {
         flex-direction: row;
       }
+
       .inline-fields input {
         flex: 1;
       }
@@ -189,7 +195,8 @@
       min-width: 550px;
     }
 
-    th, td {
+    th,
+    td {
       padding: 12px 14px;
       border-bottom: 1px solid var(--border-color);
       text-align: left;
@@ -202,7 +209,8 @@
       font-weight: 600;
     }
 
-    th.sn-col, td.sn-col {
+    th.sn-col,
+    td.sn-col {
       width: 60px;
       text-align: center;
     }
@@ -227,20 +235,35 @@
       cursor: not-allowed;
     }
 
-    .btn-add { 
-      background: var(--success-color); 
-      color: #fff; 
+    .btn-add {
+      background: var(--success-color);
+      color: #fff;
       width: 100%;
     }
-    
+
     @media (min-width: 600px) {
-      .btn-add { width: auto; }
+      .btn-add {
+        width: auto;
+      }
     }
 
-    .btn-add:hover { background: var(--success-hover); }
+    .btn-add:hover {
+      background: var(--success-hover);
+    }
 
-    .btn-edit { background: var(--warning-color); color: #000; padding: 6px 12px; font-size: 13px; }
-    .btn-delete { background: var(--danger-color); color: #fff; padding: 6px 12px; font-size: 13px; }
+    .btn-edit {
+      background: var(--warning-color);
+      color: #000;
+      padding: 6px 12px;
+      font-size: 13px;
+    }
+
+    .btn-delete {
+      background: var(--danger-color);
+      color: #fff;
+      padding: 6px 12px;
+      font-size: 13px;
+    }
 
     .btn-post {
       background: var(--primary-color);
@@ -252,7 +275,9 @@
       border-radius: var(--radius);
     }
 
-    .btn-post:hover { background: var(--primary-hover); }
+    .btn-post:hover {
+      background: var(--primary-hover);
+    }
 
     .grand-total {
       text-align: right;
@@ -309,56 +334,121 @@
       .credit-details {
         flex-direction: row;
       }
+
       .credit-details > div {
         flex: 1;
       }
     }
   </style>
 </head>
+
 <body>
 
   <div class="container">
+
     <header>
       <h1>Shubham Mittal Store</h1>
+
       <div class="header-right">
-        <div class="date-display" id="dateDisplay">Loading date...</div>
-        
-        <div class="type-toggle-group">
-          <button type="button" class="toggle-btn active" id="btnSales" onclick="setEntryType('Sales')">Sales</button>
-          <button type="button" class="toggle-btn" id="btnPurchase" onclick="setEntryType('Purchase')">Purchase</button>
+
+        <div class="date-display" id="dateDisplay">
+          Loading date...
         </div>
+
+        <div class="type-toggle-group">
+          <button
+            type="button"
+            class="toggle-btn active"
+            id="btnSales"
+            onclick="setEntryType('Sales')">
+            Sales
+          </button>
+
+          <button
+            type="button"
+            class="toggle-btn"
+            id="btnPurchase"
+            onclick="setEntryType('Purchase')">
+            Purchase
+          </button>
+        </div>
+
       </div>
     </header>
 
-    <!-- Creditor Selection Block -->
+    <!-- Creditor Selection -->
     <div class="form-group form-row">
       <div>
-        <label for="creditorSelect">Creditor Name:</label>
-        <select id="creditorSelect" onchange="toggleCustomCreditor()">
-          <option value="" disabled selected>-- Select Creditor --</option>
+
+        <label for="creditorSelect">
+          Creditor Name:
+        </label>
+
+        <select
+          id="creditorSelect"
+          onchange="toggleCustomCreditor()">
+
+          <option value="" disabled selected>
+            -- Select Creditor --
+          </option>
+
           <option value="Abhishek">Abhishek</option>
           <option value="Arun">Arun</option>
           <option value="Amit">Amit</option>
           <option value="Other">Other...</option>
+
         </select>
-        <input type="text" id="customCreditor" class="custom-input" placeholder="Enter Custom Creditor Name">
+
+        <input
+          type="text"
+          id="customCreditor"
+          class="custom-input"
+          placeholder="Enter Custom Creditor Name">
+
       </div>
     </div>
 
-    <!-- Items Form -->
+    <!-- Items -->
     <div class="form-group">
+
       <label>Add Item Details:</label>
+
       <div class="inline-fields">
-        <input type="text" id="itemName" placeholder="Item Name">
-        <input type="number" id="itemPrice" placeholder="Price (₹)" step="0.01" min="0">
-        <input type="number" id="itemQty" placeholder="Qty" min="1">
-        <button type="button" class="btn btn-add" id="btnAddItem" onclick="addOrUpdateItem()">Add Item</button>
+
+        <input
+          type="text"
+          id="itemName"
+          placeholder="Item Name">
+
+        <input
+          type="number"
+          id="itemPrice"
+          placeholder="Price (₹)"
+          step="0.01"
+          min="0">
+
+        <input
+          type="number"
+          id="itemQty"
+          placeholder="Qty"
+          min="1">
+
+        <button
+          type="button"
+          class="btn btn-add"
+          id="btnAddItem"
+          onclick="addOrUpdateItem()">
+          Add Item
+        </button>
+
       </div>
     </div>
 
-    <!-- Scrollable Items Table -->
+    <!-- Items Table -->
     <div class="table-container">
+
       <table>
+
         <thead>
           <tr>
             <th class="sn-col">S.No</th>
@@ -369,132 +459,312 @@
             <th>Actions</th>
           </tr>
         </thead>
+
         <tbody id="itemsTableBody">
-          <!-- Dynamic rows inserted here -->
         </tbody>
+
       </table>
+
     </div>
 
     <div class="grand-total">
-      Grand Total: ₹<span id="grandTotalText">0.00</span>
+      Grand Total: ₹
+      <span id="grandTotalText">0.00</span>
     </div>
 
     <!-- Payment Section -->
     <div class="payment-section">
+
       <label>Payment Status:</label>
-      
+
       <div class="payment-toggle-group">
-        <button type="button" class="pay-btn active" id="btnFullPayment" onclick="setPaymentStatus('Full Payment')">Full Payment</button>
-        <button type="button" class="pay-btn" id="btnCredit" onclick="setPaymentStatus('Credit')">Credit</button>
+
+        <button
+          type="button"
+          class="pay-btn active"
+          id="btnFullPayment"
+          onclick="setPaymentStatus('Full Payment')">
+          Full Payment
+        </button>
+
+        <button
+          type="button"
+          class="pay-btn"
+          id="btnCredit"
+          onclick="setPaymentStatus('Credit')">
+          Credit
+        </button>
+
       </div>
 
-      <div class="credit-details" id="creditDetails">
+      <div
+        class="credit-details"
+        id="creditDetails">
+
         <div>
-          <label for="partPayment">Part Payment Received (₹):</label>
-          <input type="number" id="partPayment" placeholder="0.00" oninput="calculateBalance()">
+
+          <label for="partPayment">
+            Part Payment Received (₹):
+          </label>
+
+          <input
+            type="number"
+            id="partPayment"
+            placeholder="0.00"
+            min="0"
+            step="0.01"
+            oninput="calculateBalance()">
+
         </div>
+
         <div>
-          <label for="balanceAmount">Balance Due (₹):</label>
-          <input type="number" id="balanceAmount" placeholder="0.00" readonly>
+
+          <label for="balanceAmount">
+            Balance Due (₹):
+          </label>
+
+          <input
+            type="number"
+            id="balanceAmount"
+            placeholder="0.00"
+            readonly>
+
         </div>
+
       </div>
+
     </div>
 
-    <button type="button" class="btn btn-post" id="btnSubmit" onclick="postToGoogleSheet()">POST TO GOOGLE SHEET</button>
+    <button
+      type="button"
+      class="btn btn-post"
+      id="btnSubmit"
+      onclick="postToGoogleSheet()">
+      POST TO GOOGLE SHEET
+    </button>
+
   </div>
 
   <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyWnDOTBbCOkHTgMtUfheNGEySgGa6g2ejwrWjbZiqSBHorDaDJ83rJwwq6-jajJH7q9g/exec";
+
+    const GOOGLE_SCRIPT_URL =
+      "https://script.google.com/macros/s/AKfycbyWnDOTBbCOkHTgMtUfheNGEySgGa6g2ejwrWjbZiqSBHorDaDJ83rJwwq6-jajJH7q9g/exec";
 
     let items = [];
     let editIndex = -1;
     let selectedEntryType = "Sales";
     let selectedPaymentStatus = "Full Payment";
 
+
+    /* ------------------------------
+       CUSTOM CREDITOR
+    ------------------------------ */
+
     function toggleCustomCreditor() {
-      const select = document.getElementById('creditorSelect');
-      const customInput = document.getElementById('customCreditor');
+
+      const select =
+        document.getElementById('creditorSelect');
+
+      const customInput =
+        document.getElementById('customCreditor');
+
       if (select.value === 'Other') {
+
         customInput.style.display = 'block';
         customInput.focus();
+
       } else {
+
         customInput.style.display = 'none';
         customInput.value = '';
+
       }
     }
 
+
+    /* ------------------------------
+       SALES / PURCHASE
+    ------------------------------ */
+
     function setEntryType(type) {
+
       selectedEntryType = type;
-      document.getElementById('btnSales').classList.toggle('active', type === 'Sales');
-      document.getElementById('btnPurchase').classList.toggle('active', type === 'Purchase');
+
+      document
+        .getElementById('btnSales')
+        .classList
+        .toggle('active', type === 'Sales');
+
+      document
+        .getElementById('btnPurchase')
+        .classList
+        .toggle('active', type === 'Purchase');
     }
 
+
+    /* ------------------------------
+       PAYMENT STATUS
+    ------------------------------ */
+
     function setPaymentStatus(status) {
+
       selectedPaymentStatus = status;
-      document.getElementById('btnFullPayment').classList.toggle('active', status === 'Full Payment');
-      document.getElementById('btnCredit').classList.toggle('active', status === 'Credit');
-      
-      const creditDetails = document.getElementById('creditDetails');
+
+      document
+        .getElementById('btnFullPayment')
+        .classList
+        .toggle('active', status === 'Full Payment');
+
+      document
+        .getElementById('btnCredit')
+        .classList
+        .toggle('active', status === 'Credit');
+
+      const creditDetails =
+        document.getElementById('creditDetails');
+
       if (status === 'Full Payment') {
+
         creditDetails.style.display = 'none';
+
         document.getElementById('partPayment').value = '';
         document.getElementById('balanceAmount').value = '';
+
       } else {
+
         creditDetails.style.display = 'flex';
+
         calculateBalance();
       }
     }
 
+
+    /* ------------------------------
+       DISPLAY DATE
+       DD/MM/YYYY
+    ------------------------------ */
+
     function setDate() {
+
       const today = new Date();
-      const dd = String(today.getDate()).padStart(2, '0');
-      const mm = String(today.getMonth() + 1).padStart(2, '0');
-      const yyyy = today.getFullYear();
-      document.getElementById('dateDisplay').innerText = `${dd}/${mm}/${yyyy}`;
+
+      const dd =
+        String(today.getDate()).padStart(2, '0');
+
+      const mm =
+        String(today.getMonth() + 1).padStart(2, '0');
+
+      const yyyy =
+        today.getFullYear();
+
+      document.getElementById('dateDisplay').innerText =
+        `${dd}/${mm}/${yyyy}`;
     }
 
+
+    /* ------------------------------
+       ADD / UPDATE ITEM
+    ------------------------------ */
+
     function addOrUpdateItem() {
-      const nameInput = document.getElementById('itemName');
-      const priceInput = document.getElementById('itemPrice');
-      const qtyInput = document.getElementById('itemQty');
 
-      const name = nameInput.value.trim();
-      const price = parseFloat(priceInput.value);
-      const qty = parseInt(qtyInput.value);
+      const nameInput =
+        document.getElementById('itemName');
 
-      if (!name || isNaN(price) || isNaN(qty) || qty <= 0 || price < 0) {
-        alert("Please enter a valid item name, price, and quantity.");
+      const priceInput =
+        document.getElementById('itemPrice');
+
+      const qtyInput =
+        document.getElementById('itemQty');
+
+      const name =
+        nameInput.value.trim();
+
+      const price =
+        parseFloat(priceInput.value);
+
+      const qty =
+        parseInt(qtyInput.value);
+
+      if (
+        !name ||
+        isNaN(price) ||
+        isNaN(qty) ||
+        qty <= 0 ||
+        price < 0
+      ) {
+
+        alert(
+          "Please enter a valid item name, price, and quantity."
+        );
+
         return;
       }
 
-      const total = price * qty;
+      const total =
+        price * qty;
 
       if (editIndex === -1) {
-        items.push({ name, price, qty, total });
+
+        items.push({
+          name,
+          price,
+          qty,
+          total
+        });
+
       } else {
-        items[editIndex] = { name, price, qty, total };
+
+        items[editIndex] = {
+          name,
+          price,
+          qty,
+          total
+        };
+
         editIndex = -1;
-        document.getElementById('btnAddItem').innerText = 'Add Item';
+
+        document.getElementById('btnAddItem').innerText =
+          'Add Item';
       }
 
       clearItemInputs();
+
       renderItemsTable();
+
       nameInput.focus();
     }
 
+
+    /* ------------------------------
+       CLEAR ITEM INPUTS
+    ------------------------------ */
+
     function clearItemInputs() {
+
       document.getElementById('itemName').value = '';
       document.getElementById('itemPrice').value = '';
       document.getElementById('itemQty').value = '';
     }
 
+
+    /* ------------------------------
+       RENDER TABLE
+    ------------------------------ */
+
     function renderItemsTable() {
-      const tbody = document.getElementById('itemsTableBody');
+
+      const tbody =
+        document.getElementById('itemsTableBody');
+
       tbody.innerHTML = '';
+
       let grandTotal = 0;
 
       items.forEach((item, index) => {
+
         grandTotal += item.total;
+
         tbody.innerHTML += `
           <tr>
             <td class="sn-col">${index + 1}</td>
@@ -504,107 +774,325 @@
             <td>₹${item.total.toFixed(2)}</td>
             <td>
               <div class="actions-cell">
-                <button type="button" class="btn btn-edit" onclick="editItem(${index})">Edit</button>
-                <button type="button" class="btn btn-delete" onclick="deleteItem(${index})">Delete</button>
+
+                <button
+                  type="button"
+                  class="btn btn-edit"
+                  onclick="editItem(${index})">
+                  Edit
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-delete"
+                  onclick="deleteItem(${index})">
+                  Delete
+                </button>
+
               </div>
             </td>
           </tr>
         `;
       });
 
-      document.getElementById('grandTotalText').innerText = grandTotal.toFixed(2);
+      document.getElementById('grandTotalText').innerText =
+        grandTotal.toFixed(2);
+
       calculateBalance();
     }
 
+
+    /* ------------------------------
+       EDIT ITEM
+    ------------------------------ */
+
     function editItem(index) {
+
       const item = items[index];
-      document.getElementById('itemName').value = item.name;
-      document.getElementById('itemPrice').value = item.price;
-      document.getElementById('itemQty').value = item.qty;
-      
+
+      document.getElementById('itemName').value =
+        item.name;
+
+      document.getElementById('itemPrice').value =
+        item.price;
+
+      document.getElementById('itemQty').value =
+        item.qty;
+
       editIndex = index;
-      document.getElementById('btnAddItem').innerText = 'Update Item';
+
+      document.getElementById('btnAddItem').innerText =
+        'Update Item';
     }
 
+
+    /* ------------------------------
+       DELETE ITEM
+    ------------------------------ */
+
     function deleteItem(index) {
+
       items.splice(index, 1);
+
       renderItemsTable();
     }
 
+
+    /* ------------------------------
+       CALCULATE BALANCE
+    ------------------------------ */
+
     function calculateBalance() {
-      const grandTotal = parseFloat(document.getElementById('grandTotalText').innerText) || 0;
-      const partPayment = parseFloat(document.getElementById('partPayment').value) || 0;
-      const balance = grandTotal - partPayment;
-      document.getElementById('balanceAmount').value = balance >= 0 ? balance.toFixed(2) : '0.00';
+
+      const grandTotal =
+        parseFloat(
+          document.getElementById('grandTotalText').innerText
+        ) || 0;
+
+      const partPayment =
+        parseFloat(
+          document.getElementById('partPayment').value
+        ) || 0;
+
+      const balance =
+        grandTotal - partPayment;
+
+      document.getElementById('balanceAmount').value =
+        balance >= 0
+          ? balance.toFixed(2)
+          : '0.00';
     }
 
+
+    /* ------------------------------
+       POST TO GOOGLE SHEETS
+    ------------------------------ */
+
     function postToGoogleSheet() {
-      const select = document.getElementById('creditorSelect').value;
-      const customCreditor = document.getElementById('customCreditor').value.trim();
-      const creditor = (select === 'Other') ? customCreditor : select;
+
+      const select =
+        document.getElementById('creditorSelect').value;
+
+      const customCreditor =
+        document
+          .getElementById('customCreditor')
+          .value
+          .trim();
+
+      const creditor =
+        select === 'Other'
+          ? customCreditor
+          : select;
+
 
       if (!creditor) {
-        alert("Please select or enter a creditor name.");
+
+        alert(
+          "Please select or enter a Customer / Creditor name."
+        );
+
         return;
       }
 
-      if (items.length === 0) {
-        alert("Please add at least one item.");
+
+      if (!items || items.length === 0) {
+
+        alert(
+          "Please add at least one item before posting."
+        );
+
         return;
       }
 
-      const grandTotal = parseFloat(document.getElementById('grandTotalText').innerText);
-      const partPayment = selectedPaymentStatus === 'Credit' ? parseFloat(document.getElementById('partPayment').value || 0) : grandTotal;
-      const balance = selectedPaymentStatus === 'Credit' ? parseFloat(document.getElementById('balanceAmount').value || 0) : 0;
 
-      const dateStr = document.getElementById('dateDisplay').innerText;
-      const itemSummary = items.map((i, idx) => `${idx + 1}. ${i.name} (x${i.qty} @ ₹${i.price})`).join(', ');
+      const grandTotal =
+        parseFloat(
+          document.getElementById('grandTotalText').innerText
+        ) || 0;
+
+
+      let partPayment = 0;
+      let balance = 0;
+
+
+      if (selectedPaymentStatus === 'Credit') {
+
+        partPayment =
+          parseFloat(
+            document.getElementById('partPayment').value || 0
+          );
+
+        balance =
+          parseFloat(
+            document.getElementById('balanceAmount').value || 0
+          );
+
+      } else {
+
+        partPayment = grandTotal;
+        balance = 0;
+      }
+
+
+      /* --------------------------------
+         IMPORTANT DATE CHANGE
+
+         Send YYYY-MM-DD to Apps Script
+         instead of DD/MM/YYYY text.
+      -------------------------------- */
+
+      const today = new Date();
+
+      const dateStr =
+        today.getFullYear() +
+        "-" +
+        String(today.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(today.getDate()).padStart(2, "0");
+
+
+      const itemSummary =
+        items
+          .map(
+            (i, idx) =>
+              `${idx + 1}. ${i.name} (x${i.qty} @ ₹${i.price})`
+          )
+          .join(', ');
+
 
       const payload = {
+
         date: dateStr,
-        entryType: selectedEntryType,
-        creditorName: creditor,
-        items: itemSummary,
-        total: grandTotal,
-        paymentStatus: selectedPaymentStatus,
-        partPayment: partPayment,
-        balance: balance
+
+        entryType:
+          selectedEntryType || "Sales",
+
+        creator:
+          "Admin",
+
+        partyName:
+          creditor,
+
+        items:
+          itemSummary,
+
+        total:
+          grandTotal,
+
+        paymentStatus:
+          selectedPaymentStatus || "Full Payment",
+
+        partPayment:
+          partPayment,
+
+        balance:
+          balance
       };
 
-      const submitBtn = document.getElementById('btnSubmit');
+
+      const submitBtn =
+        document.getElementById('btnSubmit');
+
       submitBtn.disabled = true;
-      submitBtn.innerText = "POSTING DATA...";
+      submitBtn.innerText =
+        "POSTING DATA...";
+
 
       fetch(GOOGLE_SCRIPT_URL, {
+
         method: 'POST',
+
         mode: 'no-cors',
+
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify(payload)
+
+        body:
+          JSON.stringify(payload)
+
       })
+
       .then(() => {
-        alert("Data sent successfully!");
+
+        alert(
+          "Data posted to Google Sheet successfully!"
+        );
+
+
         items = [];
+
         renderItemsTable();
-        document.getElementById('creditorSelect').value = '';
+
+
+        const creditorSelect =
+          document.getElementById('creditorSelect');
+
+        if (creditorSelect) {
+          creditorSelect.value = '';
+        }
+
+
+        const customCreditorInput =
+          document.getElementById('customCreditor');
+
+        if (customCreditorInput) {
+          customCreditorInput.value = '';
+        }
+
+
         toggleCustomCreditor();
-        setPaymentStatus('Full Payment');
-        setEntryType('Sales');
-        document.getElementById('itemName').focus();
+
+
+        setPaymentStatus(
+          'Full Payment'
+        );
+
+
+        setEntryType(
+          'Sales'
+        );
+
+
+        const itemNameInput =
+          document.getElementById('itemName');
+
+        if (itemNameInput) {
+          itemNameInput.focus();
+        }
+
       })
+
       .catch(error => {
-        console.error('Error!', error);
-        alert('Failed to post data. Please try again.');
+
+        console.error(
+          'Error posting data:',
+          error
+        );
+
+        alert(
+          'Failed to post data. Please check your network connection and try again.'
+        );
+
       })
+
       .finally(() => {
+
         submitBtn.disabled = false;
-        submitBtn.innerText = "POST TO GOOGLE SHEET";
+
+        submitBtn.innerText =
+          "POST TO GOOGLE SHEET";
       });
     }
 
-    // Initialize setup
+
+    /* ------------------------------
+       INITIALIZE
+    ------------------------------ */
+
     setDate();
+
   </script>
+
 </body>
 </html>
